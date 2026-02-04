@@ -2,6 +2,14 @@
 
 > **Advanced Web Application Firewall Bypass Framework using Deep Reinforcement Learning and Large Language Models**
 
+## 🎥 Demo Video
+
+https://github.com/user-attachments/assets/[Demo]-VALKYRIE-WAF.mkv
+
+*Watch the complete demonstration of VALKYRIE-WAF in action*
+
+---
+
 VALKYRIE-WAF is a cutting-edge research framework that leverages reinforcement learning (A2C/PPO) and transformer-based language models to generate sophisticated web attack payloads capable of bypassing modern WAF systems. The framework combines grammar-based generation, reward modeling, and advanced post-processing validation to create production-ready offensive security testing tools.
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
