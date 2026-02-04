@@ -1,8 +1,7 @@
 
-https://github.com/user-attachments/assets/6873bbb5-fa43-49dc-89ae-f141600d3365
 # VALKYRIE-WAF 🛡️
 
-> **Advanced Web Application Firewall Bypass Framework using Deep Reinforcement Learning and Large Language Models**
+> **Assessing the Robustness of Web Application Firewalls using Reinforcement Learning and Pre-trained Language Modelss**
 
 ## 🎥 Demo Video
 
@@ -31,7 +30,7 @@ VALKYRIE-WAF is a cutting-edge research framework that leverages reinforcement l
 - Value network for accurate advantage estimation
 
 ### 🎓 **Large Language Model Integration**
-- Fine-tuned **Facebook OPT-125M** and **FLAN-T5** models for attack payload generation
+- Fine-tuned **Facebook OPT-125M** models for attack payload generation
 - Transformer-based architecture for context-aware payload synthesis
 - Support for multiple attack vectors through specialized model training
 
@@ -55,11 +54,6 @@ VALKYRIE-WAF is a cutting-edge research framework that leverages reinforcement l
 - **SafeLine** WAF evasion
 - Cross-WAF validation with extensive result notebooks
 - Real-world deployment simulation
-
-### 📊 **RAG-Enhanced Vulnerability Analysis**
-- Automated **vulnerability disclosure crawler** (Bugcrowd, HackerOne)
-- **Retrieval-Augmented Generation** for context-aware attack synthesis
-- Historical vulnerability pattern analysis
 
 ## 📁 Project Structure
 
@@ -122,87 +116,6 @@ VALKYRIE-WAF/
 └── requirements.txt             # Python dependencies
 ```
 
-## 🚀 Quick Start
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/JayBao2604/VALKYRIE-WAF.git
-cd VALKYRIE-WAF
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Install in development mode
-pip install -e .
-```
-
-### Basic Usage
-
-#### 1. Generate Attack Payloads
-
-```bash
-# Generate SQL injection payloads
-python scripts/generate_payloads.py -t sqli -n 10000
-
-# Generate XSS payloads
-python scripts/generate_payloads.py -t xss -n 5000
-
-# Generate all attack types
-python scripts/generate_payloads.py
-```
-
-#### 2. Train RL Models
-
-```bash
-# Train A2C model for SQL injection
-python scripts/train.py -t sqli --num-iters 1000 --batch-size 8
-
-# Train with custom reward model
-python scripts/train.py -t xss \
-    --policy-model facebook/opt-125m \
-    --reward-model models/rewards/xss-reward \
-    --learning-rate 5e-5
-```
-
-#### 3. Pretrain Language Models
-
-```bash
-# Pretrain on SQL injection dataset
-python scripts/pretrain.py --attack-type sqli --num-epochs 3
-
-# Quick test with limited samples
-python scripts/pretrain.py --attack-type xss --max-samples 1000 --num-epochs 1
-```
-
-#### 4. Advanced Payload Validation
-
-```python
-from advanced_post_rl_agent import AdvancedPostRLAgent
-
-# Initialize validator
-agent = AdvancedPostRLAgent(
-    attack_type="sqli",
-    min_combined_score=0.70,
-    device="cpu"
-)
-
-# Validate payload
-result = agent.validate_payload("1' OR '1'='1")
-
-if result.is_production_ready:
-    print(f"✓ Production ready: {result.corrected_payload}")
-    print(f"Quality Score: {result.quality_score.combined_score:.4f}")
-else:
-    print(f"✗ Rejected: {result.rejection_reasons}")
-
-# Batch processing
-payloads = ["1' OR '1'='1", "admin' --", "1' UNION SELECT * --"]
-results = agent.process_batch(payloads, verbose=True)
-agent.print_summary()
-```
-
 ## 🧪 Training Pipeline
 
 ### Stage 1: Pretraining
@@ -233,14 +146,6 @@ agent.print_summary()
 5. Multi-dimensional quality scoring
 6. Production readiness classification
 
-## 📊 Evaluation & Results
-
-The framework includes comprehensive evaluation notebooks in the `notebooks/` directory:
-
-- **WAF Bypass Results**: `results_rl_*_cross_modsec.ipynb`, `results_rl_*_cross_safeline.ipynb`
-- **Attack-Specific Results**: `results_rl_sqli.ipynb`, `results_rl_xss.ipynb`, `results_rl_rce.ipynb`
-- **Training Experiments**: `rl-a2c-*.ipynb`, `rl-ppo-*.ipynb`
-
 ## 🛠️ Advanced Features
 
 ### Grammar-Based Generation
@@ -267,12 +172,6 @@ The framework includes comprehensive evaluation notebooks in the `notebooks/` di
 - **Evasion Score** (15%): WAF bypass capability
 - **Semantic Score** (15%): Attack feasibility
 - Combined scoring for production readiness
-
-## 📖 Documentation
-
-- [**POST_RL_USAGE_GUIDE.md**](POST_RL_USAGE_GUIDE.md) - Advanced payload validation guide
-- [**REFACTORING_SUMMARY.md**](REFACTORING_SUMMARY.md) - Code architecture documentation
-- [**KAGGLE_SETUP.md**](KAGGLE_SETUP.md) - Cloud training setup guide
 
 ## 🔬 Research Applications
 
@@ -323,20 +222,5 @@ For questions, suggestions, or collaboration:
 
 **Built with ❤️ for the security research community**
 
-## License
-
-[Your License Here]
-
-## Citation
-
-If you use this work, please cite:
-
-```bibtex
-@software{deg_waf,
-  title={DEG-WAF: Deep Learning Web Application Firewall},
-  author={DEG-WAF Team},
-  year={2025}
-}
-```
 
 
