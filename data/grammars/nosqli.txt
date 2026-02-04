@@ -1,0 +1,114 @@
+start : queryString | jsonObject;
+
+//### Query String Style ###
+queryString : pair | pair amp queryString;
+pair : key operatorClause equal value;
+operatorClause : bracketPairStart operator bracketPairEnd;
+
+//### JSON Object Style ###
+jsonObject : bracePairStart pairList bracePairEnd;
+pairList : jsonPair | jsonPair comma pairList;
+jsonPair : quotePairStart key quotePairEnd colon valueExpression;
+valueExpression : primitiveValue | operatorObject | operatorObjectWithMultiple;
+operatorObject : bracePairStart operatorPair bracePairEnd;
+operatorObjectWithMultiple : bracePairStart operatorPair comma operatorPairList bracePairEnd;
+operatorPairList : operatorPair | operatorPair comma operatorPairList;
+operatorPair : quotePairStart operator quotePairEnd colon primitiveValue;
+
+//### Consistent Obfuscation Pairs ###
+bracePairStart : '{' | '%7B';
+bracePairEnd : '}' | '%7D';
+bracketPairStart : '[' | '%5B';
+bracketPairEnd : ']' | '%5D';
+quotePairStart : '"' | '%22';
+quotePairEnd : '"' | '%22';
+
+//### Expanded Operators ###
+operator : ne | eq | regex | gt | lt | gte | lte | nin | exists | in | where | size | type | mod | all | elemMatch | not | text | search | comment | or | and | nor | near | within | box | center | centerSphere | geometry | slice | bitsAllSet | bitsAnySet | bitsAllClear | bitsAnyClear | rand | expr | jsonSchema | function | accumulator | replaceRoot | replaceWith | merge | lookup | graphLookup | geoWithin | geoIntersects;
+ne : '$ne';
+eq : '$eq';
+regex : '$regex';
+gt : '$gt';
+lt : '$lt';
+gte : '$gte';
+lte : '$lte';
+nin : '$nin';
+exists : '$exists';
+in : '$in';
+where : '$where';
+size : '$size';
+type : '$type';
+mod : '$mod';
+all : '$all';
+elemMatch : '$elemMatch';
+not : '$not';
+text : '$text';
+search : '$search';
+comment : '$comment';
+or : '$or';
+and : '$and';
+nor : '$nor';
+near : '$near';
+within : '$within';
+box : '$box';
+center : '$center';
+centerSphere : '$centerSphere';
+geometry : '$geometry';
+slice : '$slice';
+bitsAllSet : '$bitsAllSet';
+bitsAnySet : '$bitsAnySet';
+bitsAllClear : '$bitsAllClear';
+bitsAnyClear : '$bitsAnyClear';
+rand : '$rand';
+expr : '$expr';
+jsonSchema : '$jsonSchema';
+function : '$function';
+accumulator : '$accumulator';
+replaceRoot : '$replaceRoot';
+replaceWith : '$replaceWith';
+merge : '$merge';
+lookup : '$lookup';
+graphLookup : '$graphLookup';
+geoWithin : '$geoWithin';
+geoIntersects : '$geoIntersects';
+
+//### Expanded Values ###
+primitiveValue : string | number | boolean | null | undefined | regexPattern | array | jsExpression | objectId | date | timestamp | binary | code | minKey | maxKey;
+string : quotePairStart fixedString quotePairEnd;
+fixedString : 'admin' | 'toto' | 'foo' | 'bar' | 'test' | 'adm' | 'user' | 'password' | '1' | '7' | 's' | '' | 'root' | 'guest' | 'admin123' | 'password123' | 'qwerty' | 'letmein' | 'welcome' | 'login' | 'secret' | 'pass' | '123456' | '12345678' | '1234' | '12345' | 'unknown' | 'undefined' | 'null' | 'true' | 'false' | 'john' | 'jane' | 'example' | 'demo' | 'temp' | 'superadmin' | 'moderator' | 'system' | 'api_key' | 'token' | 'session';
+number : digit | digit digit | digit digit digit | digit digit digit digit | digit digit digit digit digit | decimal | negative | scientific;
+digit : '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+decimal : digit dot digit | digit dot digit digit;
+negative : '-' digit | '-' digit digit | '-' digit digit digit | '-' decimal;
+scientific : digit 'e' digit | digit 'e+' digit | digit 'e-' digit;
+boolean : 'true' | 'false' | '1' | '0';
+null : 'null';
+undefined : 'undefined';
+regexPattern : quotePairStart regexFixedPattern quotePairEnd | slash regexFixedPattern slash regexFlags;
+regexFixedPattern : '.' | '.*' | '^adm$' | '.{1}' | '.{3}' | '.{25}' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | '[a-z]' | '[A-Z]' | '[0-9]' | '\\w' | '\\d' | '\\s' | '\\S' | '\\W' | '\\D' | '\\b' | '\\B' | '^' | '$' | '\\' | '|' | '()' | '[]' | '{}' | '^admin' | 'admin$' | '.*password.*' | '^[a-z]{3}$';
+regexFlags : '' | 'i' | 'g' | 'ig' | 'gi' | 'm' | 'im';
+slash : '/';
+array : bracketPairStart arrayValues bracketPairEnd | bracketPairStart bracketPairEnd;
+arrayValues : primitiveValue | primitiveValue comma arrayValues;
+jsExpression : quotePairStart whereClause quotePairEnd;
+whereClause : 'this.credits == this.debits' | 'this.credits > this.debits' | '1 == 1' | 'true' | 'false' | 'this.isAdmin == true' | 'this.username.length > 0' | 'this.password.length < 10' | 'this.age >= 18' | 'this.salary < 50000' | 'this.department == "IT"' | 'return true' | 'return 1==1' | 'sleep(1000)' | 'while(1)' | 'function(){return true}()';
+objectId : 'ObjectId(' quotePairStart '507f1f77bcf86cd799439011' quotePairEnd ')' | 'ObjectId(' quotePairStart '5f1f77bcf86cd799439012' quotePairEnd ')' | 'ObjectId(' quotePairStart '1234567890abcdef12345678' quotePairEnd ')';
+date : 'new Date(1609459200000)' | 'ISODate(' quotePairStart '2023-01-01T00:00:00Z' quotePairEnd ')' | 'ISODate(' quotePairStart '2025-12-31T23:59:59Z' quotePairEnd ')' | 'new Date()';
+timestamp : 'Timestamp(0, 0)' | 'Timestamp(1234567890, 1)' | 'Timestamp()';
+binary : 'BinData(0, ' quotePairStart 'base64data' quotePairEnd ')';
+code : 'Code(' quotePairStart 'function(){return true}' quotePairEnd ')';
+minKey : 'MinKey()';
+maxKey : 'MaxKey()';
+
+//### Expanded Keys ###
+key : 'username' | 'user' | 'name' | 'pass' | 'password' | 'pwd' | 'login' | 'credits' | 'debits' | 'email' | 'id' | '_id' | 'role' | 'status' | 'isAdmin' | 'account' | 'token' | 'session' | 'auth' | 'access' | 'level' | 'group' | 'department' | 'phone' | 'address' | 'city' | 'country' | 'zip' | 'age' | 'gender' | 'dob' | 'createdAt' | 'updatedAt' | 'salary' | 'position' | 'permissions' | 'settings' | 'metadata' | 'location' | 'coordinates' | 'lastLogin' | 'isActive' | 'isVerified' | 'apiKey' | 'secretKey' | 'accessToken' | 'refreshToken' | 'sessionId' | 'userId' | 'clientId';
+
+//### Special Characters ###
+comma : ',' | '%2C';
+equal : '=' | '%3D';
+amp : '&' | '%26';
+dot : '.' | '%2E';
+caret : '^' | '%5E';
+dollar : '$' | '%24';
+pipe : '|' | '%7C';
+colon : ':' | '%3A';

