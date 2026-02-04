@@ -55,71 +55,10 @@ VALKYRIE-WAF is a cutting-edge research framework that leverages reinforcement l
 - Cross-WAF validation with extensive result notebooks
 - Real-world deployment simulation
 
-## 📁 Project Structure
-
-```
-VALKYRIE-WAF/
-├── src/deg_waf/              # Core framework package
-│   ├── models/               # Neural network architectures
-│   │   ├── reward_model.py   # OPT-based reward scoring
-│   │   └── value_network.py  # Value head for advantage estimation
-│   ├── trainers/             # RL training algorithms
-│   │   ├── a2c_agent.py      # A2C agent implementation
-│   │   └── a2c_trainer.py    # Training loop with GAE
-│   ├── generators/           # Payload generation engines
-│   │   └── payload_generator.py  # Grammar-based generation
-│   ├── utils/                # Utility functions
-│   │   ├── gae.py            # Generalized Advantage Estimation
-│   │   └── config.py         # Configuration management
-│   └── rag/                  # RAG components
-│       ├── crawler.py        # Vulnerability disclosure crawler
-│       └── analyzer.py       # Semantic payload analysis
-│
-├── data/
-│   ├── grammars/             # Attack grammar definitions
-│   │   ├── sqli.txt          # SQL Injection patterns
-│   │   ├── xss.txt           # XSS attack patterns
-│   │   ├── cmdi.txt          # Command injection patterns
-│   │   ├── nosqli.txt        # NoSQL injection patterns
-│   │   └── ssrf.txt          # SSRF patterns
-│   └── generated/            # Generated payloads and vocabularies
-│
-├── models/                   # Trained model checkpoints
-│   ├── pretrained/           # Base language models
-│   ├── finetuned/            # Fine-tuned attack models
-│   └── rewards/              # Reward model checkpoints
-│
-├── scripts/                  # Command-line tools
-│   ├── train.py              # RL training script
-│   ├── generate_payloads.py  # Payload generation
-│   ├── pretrain.py           # Model pretraining
-│   └── validate_pretrain.py  # Validation script
-│
-├── notebooks/                # Experimental notebooks
-│   ├── results_rl_*.ipynb    # WAF bypass results (ModSecurity, SafeLine)
-│   ├── rl-a2c-*.ipynb        # A2C training experiments
-│   └── rl-ppo-*.ipynb        # PPO training experiments
-│
-├── tests/                    # Unit tests
-│   └── test_generators.py
-│
-├── tools/                    # Additional utilities
-│   ├── grammar_sampler_*.py  # Grammar-based sampling tools
-│   ├── reward_model.py       # Reward calculation
-│   └── waf_tester.py         # WAF testing utilities
-│
-├── advanced_post_rl_agent.py    # Advanced payload validator
-├── demo_post_rl_validation.py   # Validation demo
-├── generate_from_RL.py          # RL-based generation
-├── generate_from_LLM.py         # LLM-based generation
-├── reward_model_loader.py       # Reward model utilities
-└── requirements.txt             # Python dependencies
-```
-
 ## 🧪 Training Pipeline
 
 ### Stage 1: Pretraining
-1. Load base language model (OPT-125M / FLAN-T5)
+1. Load base language model (OPT-125M)
 2. Fine-tune on grammar-generated attack payloads
 3. Add attack-specific vocabulary tokens
 4. Save pretrained checkpoint
@@ -201,10 +140,6 @@ Contributions are welcome! Please feel free to:
 - Submit pull requests
 - Improve documentation
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## 🙏 Acknowledgments
 
 - Facebook AI Research for OPT models
@@ -221,6 +156,7 @@ For questions, suggestions, or collaboration:
 ---
 
 **Built with ❤️ for the security research community**
+
 
 
 
