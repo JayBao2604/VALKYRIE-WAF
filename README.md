@@ -4,11 +4,11 @@
 
 ## 🎥 Demo Video
 
-<video src="https://github.com/JayBao2604/VALKYRIE-WAF/raw/main/%5BDemo%5D-VALKYRIE-WAF.mkv" controls width="100%">
-  Your browser does not support the video tag.
-</video>
+https://github.com/user-attachments/assets/[DEMO_VIDEO_PLACEHOLDER]
 
 *Complete demonstration of VALKYRIE-WAF in action - showing payload generation, WAF bypass testing, and validation pipeline*
+
+> **Note:** To properly display the video, please drag and drop the `[Demo]-VALKYRIE-WAF.mp4` file into a GitHub issue or this README edit box, then copy the generated URL here.
 
 ---
 
