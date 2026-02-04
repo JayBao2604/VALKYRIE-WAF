@@ -1,9 +1,14 @@
+
+https://github.com/user-attachments/assets/6873bbb5-fa43-49dc-89ae-f141600d3365
 # VALKYRIE-WAF 🛡️
 
 > **Advanced Web Application Firewall Bypass Framework using Deep Reinforcement Learning and Large Language Models**
 
 ## 🎥 Demo Video
-https://github.com/JayBao2604/VALKYRIE-WAF/blob/main/%5BDemo%5D-VALKYRIE-WAF.mp4
+
+https://github.com/user-attachments/assets/d82b5732-8185-433e-96af-743196dbf2f3
+
+
 
 *Complete demonstration of VALKYRIE-WAF in action - showing payload generation, WAF bypass testing, and validation pipeline*
 
@@ -333,4 +338,5 @@ If you use this work, please cite:
   year={2025}
 }
 ```
+
 
