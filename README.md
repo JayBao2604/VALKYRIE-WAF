@@ -143,19 +143,13 @@ Contributions are welcome! Please feel free to:
 ## 🙏 Acknowledgments
 
 - Facebook AI Research for OPT models
-- Google for FLAN-T5 models
 - Hugging Face for the Transformers library
 - Open-source security research community
-
-## 📧 Contact
-
-For questions, suggestions, or collaboration:
-- GitHub: [@JayBao2604](https://github.com/JayBao2604)
-- Repository: [VALKYRIE-WAF](https://github.com/JayBao2604/VALKYRIE-WAF)
 
 ---
 
 **Built with ❤️ for the security research community**
+
 
 
 
